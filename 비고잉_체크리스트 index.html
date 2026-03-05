@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>비고잉 주간 체크리스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --border: #2a2a3d;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --gold: #ffd700;
+    --text: #e8e8f0;
+    --text-muted: #6b6b8a;
+    --free: #4ade80;
+    --paid: #fb923c;
+    --mixed: #60a5fa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+    background-image: 
+      radial-gradient(ellipse at 20% 10%, rgba(108,99,255,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(255,101,132,0.06) 0%, transparent 50%);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-top: 8px;
+  }
+
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 8vw, 64px);
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .week-info {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  .week-info span {
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* Progress Bar */
+  .progress-wrap {
+    max-width: 600px;
+    margin: 0 auto 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+  }
+
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  .progress-count {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--accent);
+  }
+
+  .progress-count span {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .bar-bg {
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  /* Reset button */
+  .reset-btn {
+    display: block;
+    margin: 0 auto 28px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    padding: 8px 20px;
+    border-radius: 99px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* Day Cards */
+  .days-grid {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .day-card.all-done {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(108,99,255,0.15);
+  }
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .day-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    line-height: 1;
+    min-width: 28px;
+  }
+
+  .day-name.mon { color: #60a5fa; }
+  .day-name.tue { color: #a78bfa; }
+  .day-name.wed { color: #34d399; }
+  .day-name.thu { color: #fb923c; }
+  .day-name.fri { color: #f472b6; }
+  .day-name.sat { color: #ffd700; }
+
+  .day-full {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+  }
+
+  .day-done-badge {
+    margin-left: auto;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background: rgba(108,99,255,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(108,99,255,0.3);
+    opacity: 0;
+    transition: opacity 0.3s;
+    letter-spacing: 1px;
+  }
+
+  .day-card.all-done .day-done-badge {
+    opacity: 1;
+  }
+
+  .tasks {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .task-item:hover {
+    background: var(--surface2);
+    border-color: var(--border);
+  }
+
+  .task-item.checked {
+    background: rgba(108,99,255,0.06);
+    border-color: rgba(108,99,255,0.2);
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 13px;
+  }
+
+  .task-item.checked .checkbox {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .task-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text);
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+
+  .task-item.checked .task-text {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--accent);
+  }
+
+  .badge {
+    margin-left: auto;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .badge.free {
+    background: rgba(74,222,128,0.1);
+    color: var(--free);
+    border: 1px solid rgba(74,222,128,0.2);
+  }
+  .badge.paid {
+    background: rgba(251,146,60,0.1);
+    color: var(--paid);
+    border: 1px solid rgba(251,146,60,0.2);
+  }
+  .badge.mixed {
+    background: rgba(96,165,250,0.1);
+    color: var(--mixed);
+    border: 1px solid rgba(96,165,250,0.2);
+  }
+
+  /* Confetti */
+  .confetti-wrap {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  .confetti-piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    animation: fall linear forwards;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Weekly Schedule</div>
+  <h1>비고잉</h1>
+  <div class="week-info" id="weekInfo">로딩 중...</div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-top">
+    <div class="progress-label">주간 진행률</div>
+    <div class="progress-count" id="progressCount">0 <span>/ 0</span></div>
+  </div>
+  <div class="bar-bg">
+    <div class="bar-fill" id="barFill"></div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetAll()">↺ 초기화</button>
+
+<div class="days-grid" id="daysGrid"></div>
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script>
+const SCHEDULE = [
+  {
+    day: '월', full: 'MONDAY', cls: 'mon',
+    tasks: [
+      { text: '기본영상 1편 업로드 확인', type: 'free' },
+    ]
+  },
+  {
+    day: '화', full: 'TUESDAY', cls: 'tue',
+    tasks: [
+      { text: '기본영상 2편 업로드 확인', type: 'free' },
+      { text: '브런치 패턴자료 제작 및 발송', type: 'paid' },
+      { text: '비비스 1편 업로드 확인', type: 'paid' },
+      { text: '파이널 1편 업로드 확인', type: 'paid' },
+    ]
+  },
+  {
+    day: '수', full: 'WEDNESDAY', cls: 'wed',
+    tasks: [
+      { text: '기본영상 3편 업로드 확인', type: 'free' },
+    ]
+  },
+  {
+    day: '목', full: 'THURSDAY', cls: 'thu',
+    tasks: [
+      { text: '브런치 패턴자료 제작 및 발송', type: 'paid' },
+      { text: '비비스 2편 업로드 확인', type: 'paid' },
+      { text: '파이널 스페셜 업로드 확인', type: 'paid' },
+      { text: '최종예상수 자료 제작', type: 'paid' },
+      { text: '조합 만들기', type: 'paid' },
+    ]
+  },
+  {
+    day: '금', full: 'FRIDAY', cls: 'fri',
+    tasks: [
+      { text: '위너 영상 업로드 확인', type: 'paid' },
+    ]
+  },
+  {
+    day: '토', full: 'SATURDAY', cls: 'sat',
+    tasks: [
+      { text: '최종 매회차 노란색 업데이트', type: 'paid' },
+    ]
+  },
+];
+
+const STORAGE_KEY = 'bigowing_checklist_v1';
+
+function getWeekKey() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(now.setDate(diff));
+  return monday.toISOString().split('T')[0];
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (parsed.week !== getWeekKey()) return {};
+    return parsed.data || {};
+  } catch { return {}; }
+}
+
+function saveState(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ week: getWeekKey(), data }));
+}
+
+let state = loadState();
+
+function render() {
+  const grid = document.getElementById('daysGrid');
+  grid.innerHTML = '';
+
+  let totalTasks = 0;
+  let doneTasks = 0;
+
+  SCHEDULE.forEach((dayObj, di) => {
+    const card = document.createElement('div');
+    card.className = 'day-card';
+    card.id = `day-${di}`;
+
+    const allChecked = dayObj.tasks.every((_, ti) => state[`${di}-${ti}`]);
+    if (allChecked) card.classList.add('all-done');
+
+    card.innerHTML = `
+      <div class="day-header">
+        <div class="day-name ${dayObj.cls}">${dayObj.day}</div>
+        <div class="day-full">${dayObj.full}</div>
+        <div class="day-done-badge">완료 ✓</div>
+      </div>
+      <div class="tasks" id="tasks-${di}"></div>
+    `;
+
+    grid.appendChild(card);
+
+    const tasksEl = document.getElementById(`tasks-${di}`);
+    dayObj.tasks.forEach((task, ti) => {
+      totalTasks++;
+      const key = `${di}-${ti}`;
+      const checked = !!state[key];
+      if (checked) doneTasks++;
+
+      const item = document.createElement('div');
+      item.className = `task-item${checked ? ' checked' : ''}`;
+      item.innerHTML = `
+        <div class="checkbox">${checked ? '✓' : ''}</div>
+        <div class="task-text">${task.text}</div>
+        <div class="badge ${task.type}">${task.type === 'free' ? '무료' : task.type === 'paid' ? '유료' : '혼합'}</div>
+      `;
+      item.onclick = () => toggle(di, ti, totalTasks);
+      tasksEl.appendChild(item);
+    });
+  });
+
+  updateProgress(doneTasks, totalTasks);
+  updateWeekInfo();
+}
+
+function toggle(di, ti, total) {
+  const key = `${di}-${ti}`;
+  state[key] = !state[key];
+  saveState(state);
+
+  const prevDone = Object.values(state).filter(Boolean).length;
+  const allDone = prevDone === getTotalTasks();
+
+  render();
+
+  if (allDone) launchConfetti();
+}
+
+function getTotalTasks() {
+  return SCHEDULE.reduce((acc, d) => acc + d.tasks.length, 0);
+}
+
+function updateProgress(done, total) {
+  document.getElementById('progressCount').innerHTML = `${done} <span>/ ${total}</span>`;
+  const pct = total > 0 ? (done / total) * 100 : 0;
+  document.getElementById('barFill').style.width = pct + '%';
+}
+
+function updateWeekInfo() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(now);
+  mon.setDate(diff);
+  const fri = new Date(mon);
+  fri.setDate(mon.getDate() + 4);
+
+  const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
+  const days = ['일','월','화','수','목','금','토'];
+  const todayName = days[new Date().getDay()];
+
+  document.getElementById('weekInfo').innerHTML =
+    `${fmt(mon)} ~ ${fmt(fri)} &nbsp;|&nbsp; 오늘: <span>${todayName}요일</span>`;
+}
+
+function resetAll() {
+  if (!confirm('이번 주 체크리스트를 초기화할까요?')) return;
+  state = {};
+  saveState(state);
+  render();
+}
+
+function launchConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  const colors = ['#6c63ff','#ff6584','#ffd700','#4ade80','#60a5fa','#f472b6'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random() * 100 + '%';
+    el.style.top = '-10px';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    el.style.animationDelay = Math.random() * 0.8 + 's';
+    el.style.width = el.style.height = (6 + Math.random() * 8) + 'px';
+    wrap.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+
+render();
+</script>
+</body>
+</html>
